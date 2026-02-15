@@ -79,7 +79,7 @@ If validation fails, response is `400 Bad Request` with field-level errors.
 Create item:
 
 ```bash
-curl -X POST http://localhost:8080/api/v1/items \
+curl -X POST https://java-application-yqgz.onrender.com/api/v1/items 
   -H "Content-Type: application/json" \
   -d '{
     "name":"Movie Subscription",
@@ -92,5 +92,7 @@ curl -X POST http://localhost:8080/api/v1/items \
 Get item by id:
 
 ```bash
-curl http://localhost:8080/api/v1/items/1
+curl https://java-application-yqgz.onrender.com/api/v1/items/{id}
 ```
+
+
