@@ -43,6 +43,9 @@ The API stores items with:
 - `category` (required)
 - `price` (required, must be >= 0)
 
+- All fields are validated using Jakarta Bean Validation annotations to ensure required fields are present 
+  and price is non-negative.
+
 ## API Endpoints
 
 ### 1) Add a New Item
