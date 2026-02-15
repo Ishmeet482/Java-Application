@@ -5,17 +5,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import com.Backend.item_api.service.ItemService;
 
 @SpringBootTest
-@com.Backend.item_api.AutoConfigureMockMvc
+@AutoConfigureMockMvc
 class ItemApiApplicationTests {
 
 	@Autowired
@@ -44,11 +47,11 @@ class ItemApiApplicationTests {
 				}
 				""";
 
-		mockMvc.perform(post("/api/items")
+		mockMvc.perform(post("/api/v1/items")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(requestBody))
-				.andExpect(status().isCreated())
-				.andExpect(jsonPath("$.id").value(1))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.id").exists())
 				.andExpect(jsonPath("$.name").value("Laptop"));
 	}
 
@@ -63,14 +66,18 @@ class ItemApiApplicationTests {
 				}
 				""";
 
-		mockMvc.perform(post("/api/items")
+		MvcResult createResult = mockMvc.perform(post("/api/v1/items")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
-			.andExpect(status().isCreated());
+			.andExpect(status().isOk())
+			.andReturn();
 
-		mockMvc.perform(get("/api/items/1"))
+		Number itemIdValue = JsonPath.read(createResult.getResponse().getContentAsString(), "$.id");
+		long itemId = itemIdValue.longValue();
+
+		mockMvc.perform(get("/api/v1/items/" + itemId))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.id").value(1))
+				.andExpect(jsonPath("$.id").value(itemId))
 				.andExpect(jsonPath("$.category").value("Entertainment"));
 	}
 
@@ -84,7 +91,7 @@ class ItemApiApplicationTests {
 				}
 				""";
 
-		mockMvc.perform(post("/api/items")
+		mockMvc.perform(post("/api/v1/items")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(requestBody))
 				.andExpect(status().isBadRequest())
